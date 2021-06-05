@@ -1,0 +1,19 @@
+@import 'mediawiki.mixins';
+
+@font-face {
+    font-family: minecraft;
+    src: url(../assets/fonts/minecraft.woff);
+}
+@font-face {
+    font-family: sga;
+    src: url(../assets/fonts/sga.woff);
+    unicode-range: U+0041-005A;
+}
+
+.mcfont {
+    font-family: minecraft;
+}
+.mcfont.sga {
+    font-family: sga;
+    letter-spacing: 0.1em;
+}
