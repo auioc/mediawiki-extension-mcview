@@ -1,6 +1,6 @@
 {
     "name": "MCView",
-    "version": "0.2.1",
+    "version": "0.2.4",
     "author": ["WakelessSloth56"],
     "url": "https://github.com/WakelessSloth56/mediawiki-extension-mcview",
     "description": "Render Minecraft UI",
@@ -9,10 +9,20 @@
     "AutoloadClasses": {
         "MCViewHooks": "MCViewHooks.php"
     },
+    "config": {
+        "MCViewMapFile": {
+            "value": null,
+            "description": "Map json file"
+        }
+    },
     "Hooks": {
         "ParserFirstCallInit": "MCViewHooks::onParserFirstCallInit"
     },
     "ResourceModules": {
+        "ext.MCView.view": {
+            "scripts": ["resources/ext.MCView.view.js"],
+            "styles": ["resources/ext.MCView.view.css"]
+        },
         "ext.MCView.font": {
             "styles": ["resources/ext.MCView.font.less"]
         }

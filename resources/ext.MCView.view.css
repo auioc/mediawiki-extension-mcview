@@ -1,0 +1,154 @@
+.mcview-data {
+    display: none;
+}
+
+.mcview-error {
+    color: red;
+}
+
+.mcview.item-image-small {
+    width: 16px;
+    height: 16px;
+}
+.mcview.item-image-medium {
+    width: 32px;
+    height: 32px;
+}
+.mcview.item-image-large {
+    width: 128px;
+    height: 128px;
+}
+
+.mcview-itemstack {
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.mcview.item-tooltip {
+    display: none;
+    position: absolute;
+    left: 32px;
+    top: 8px;
+    margin: 6px;
+    padding: 0.4em;
+    min-width: 140px;
+    background-color: #372237;
+    border: 2px solid #5519af;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    white-space: nowrap;
+    z-index: 99;
+}
+.mcview-itemstack:hover .mcview.item-tooltip {
+    display: block;
+}
+.mcview.item-tooltip .item-preview {
+    margin-top: 0.6em;
+    display: inline-block;
+}
+.mcview.item-tooltip .register-name,
+.mcview.item-tooltip .zh-name {
+    text-align: left;
+}
+
+.mcview.item-stacksize {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: white;
+    text-shadow: 2px 2px 0 #3f3f3f;
+}
+
+.mcview-itemicon {
+    position: relative;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+
+.mcui {
+    display: inline-block;
+    position: relative;
+    background-color: #c6c6c6;
+    padding: 6px;
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: bottom;
+    /* border: 2px solid; */
+    /* border-color: #dbdbdb #5b5b5b #5b5b5b #dbdbdb; */
+    border: 4px solid;
+    background-clip: padding-box;
+    border-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAQAAAAnOwc2AAAAMUlEQVR42pXIuRUAIAgEUZukZdviZp6GzEb7T6aMlGB9u83cmPiCoQ3KoMcFs59ImWduinifdBHvTgAAAABJRU5ErkJggg==')
+        4 fill repeat;
+}
+
+.mcui .fcol {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.mcui .frow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.mcui-title {
+    color: #404040;
+}
+
+.mcui-slot {
+    position: relative;
+    background: #8b8b8b no-repeat center center / 32px 32px;
+    border: 2px solid;
+    border-color: #373737 #fff #fff #373737;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    line-height: 1;
+    text-align: left;
+    vertical-align: bottom;
+}
+.mcui-slot.large {
+    padding: 8px;
+}
+
+.mcui-crafting-table .mcui-arrow {
+    width: 32px;
+    height: 26px;
+    margin: 0 4px;
+}
+.mcui-furnace .mcui-arrow,
+.mcui-processor .mcui-arrow {
+    width: 44px;
+    height: 30px;
+    margin: 0 14px;
+}
+
+.mcui-icon.craft-shapeless {
+    position: absolute;
+    width: 19px;
+    top: 3px;
+    right: 6px;
+    cursor: help;
+}
+.mcui-fuel {
+    width: 26px;
+    height: 26px;
+    padding: 4px;
+}
+.mcui-plus {
+    width: 26px;
+    height: 26px;
+    margin: 0 18px;
+}
+
+.mcui-inactive svg .a {
+    fill: #8b8b8b;
+}
+.mcui-active svg .a {
+    fill: white;
+}
