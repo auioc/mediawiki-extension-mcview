@@ -1,0 +1,10 @@
+.vscode/*
+*.code-workspace
+.history/
+
+example.txt
+
+python/*
+
+resources/test.js
+resources/assets/map/map.min.json
