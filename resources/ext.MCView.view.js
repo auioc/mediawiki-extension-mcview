@@ -237,9 +237,9 @@ mw.hook('wikipage.categories').add(() => {
 
             let item = item_map.map[name];
 
-            let element = $('<div></div>').addClass('mcview-itemstack');
-
             if (item) {
+                let element = $('<div></div>').addClass('mcview-itemstack');
+
                 let image_left = item.index % 32;
                 let image_top = parseInt(item.index / 32);
 
@@ -272,13 +272,11 @@ mw.hook('wikipage.categories').add(() => {
                         }px -${image_top * 128}px"></div></div>`
                     );
                 element.append(tooltip);
-            } else {
-                element.append(
-                    `<span style="color:red">MCView解析失败: 映射表中不存在item:${namespace}:${name}</span>`
-                );
-            }
 
-            return element;
+                return element;
+            } else {
+                return `<div style="color:red">MCView解析失败: 映射表中不存在item:${namespace}:${name}</div>`;
+            }
         };
 
         /**

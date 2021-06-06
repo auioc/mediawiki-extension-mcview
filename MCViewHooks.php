@@ -29,7 +29,7 @@ class MCViewHooks
         return Html::rawElement(
             'div',
             [
-                'class' => 'mcview-wrapper mcview-'.$args['type'],
+                'class' => 'mcview-wrapper mcview-type-'.$args['type'],
                 'data-mcview-type' => $args['type'],
             ],
             Html::Element(
