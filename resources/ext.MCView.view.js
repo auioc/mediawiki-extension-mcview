@@ -71,6 +71,10 @@ mw.hook('wikipage.categories').add(() => {
                         element.append(createItemStack(data));
                         break;
                     }
+                    case 'itemslot': {
+                        element.append(createItemSlot(data, element));
+                        break;
+                    }
                     case 'crafting': {
                         element.append(
                             createCraftTable(
@@ -113,6 +117,78 @@ mw.hook('wikipage.categories').add(() => {
                     }
                 }
             });
+        };
+
+        /**
+         * @param {ItemStack} item_stack
+         * @return {JQuery<HTMLElement>}
+         */
+        const createItemStack = (item_stack) => {
+            if (item_stack === null) {
+                return $('<div class="mcui-slot-placeholder"></div>');
+            }
+
+            let id = String(item_stack.id).split(':');
+            let namespace = id[0],
+                name = id[1];
+
+            let stacksize = parseInt(item_stack.count);
+
+            let item_map = window.MCView.map[namespace].item;
+
+            let style_id = `mcview-itemstack-${namespace}`;
+            if ($(`style#${style_id}`).length == 0) {
+                $('head').append(`<style id="${style_id}"></style>`);
+                $(`style#${style_id}`).append(
+                    `.mcview.item-image-medium.${namespace}{background-image:url(${item_map.image.medium});}`
+                );
+                $(`style#${style_id}`).append(
+                    `.mcview.item-image-large.${namespace}{background-image:url(${item_map.image.large});}`
+                );
+            }
+
+            let item = item_map.map[name];
+
+            if (item) {
+                let element = $('<div></div>').addClass('mcview-itemstack');
+
+                let image_left = item.index % 32;
+                let image_top = parseInt(item.index / 32);
+
+                let image_html = $('<div></div>')
+                    .addClass(
+                        `mcview item-image item-image-medium ${namespace}`
+                    )
+                    .css(
+                        'background-position',
+                        `-${image_left * 32}px -${image_top * 32}px`
+                    );
+                element.append(image_html);
+
+                let stackcount_html = $('<span></span>')
+                    .addClass('mcview item-stacksize mcfont')
+                    .html(stacksize > 1 ? stacksize : '');
+                element.append(stackcount_html);
+
+                let tooltip = $('<div></div>')
+                    .addClass('mcview item-tooltip')
+                    .append(
+                        `<div class="zh-name">${item.zh_name} (${item.en_name})</div>`
+                    )
+                    .append(
+                        `<div class="register-name">${item.register_name}</div>`
+                    )
+                    .append(
+                        `<div class="item-preview"><div class="mcview item-image-large ${namespace}" style="background-position:-${
+                            image_left * 128
+                        }px -${image_top * 128}px"></div></div>`
+                    );
+                element.append(tooltip);
+
+                return element;
+            } else {
+                return error_message(`映射表中不存在item:${namespace}:${name}`);
+            }
         };
 
         /**
@@ -200,78 +276,6 @@ mw.hook('wikipage.categories').add(() => {
                 return $('<div></div>')
                     .append(createItemStack(slot_items))
                     .addClass('mcui-slot');
-            }
-        };
-
-        /**
-         * @param {ItemStack} item_stack
-         * @return {JQuery<HTMLElement>}
-         */
-        const createItemStack = (item_stack) => {
-            if (item_stack === null) {
-                return $('<div class="mcui-slot-placeholder"></div>');
-            }
-
-            let id = String(item_stack.id).split(':');
-            let namespace = id[0],
-                name = id[1];
-
-            let stacksize = parseInt(item_stack.count);
-
-            let item_map = window.MCView.map[namespace].item;
-
-            let style_id = `mcview-itemstack-${namespace}`;
-            if ($(`style#${style_id}`).length == 0) {
-                $('head').append(`<style id="${style_id}"></style>`);
-                $(`style#${style_id}`).append(
-                    `.mcview.item-image-medium.${namespace}{background-image:url(${item_map.image.medium});}`
-                );
-                $(`style#${style_id}`).append(
-                    `.mcview.item-image-large.${namespace}{background-image:url(${item_map.image.large});}`
-                );
-            }
-
-            let item = item_map.map[name];
-
-            if (item) {
-                let element = $('<div></div>').addClass('mcview-itemstack');
-
-                let image_left = item.index % 32;
-                let image_top = parseInt(item.index / 32);
-
-                let image_html = $('<div></div>')
-                    .addClass(
-                        `mcview item-image item-image-medium ${namespace}`
-                    )
-                    .css(
-                        'background-position',
-                        `-${image_left * 32}px -${image_top * 32}px`
-                    );
-                element.append(image_html);
-
-                let stackcount_html = $('<span></span>')
-                    .addClass('mcview item-stacksize mcfont')
-                    .html(stacksize > 1 ? stacksize : '');
-                element.append(stackcount_html);
-
-                let tooltip = $('<div></div>')
-                    .addClass('mcview item-tooltip')
-                    .append(
-                        `<div class="zh-name">${item.zh_name} (${item.en_name})</div>`
-                    )
-                    .append(
-                        `<div class="register-name">${item.register_name}</div>`
-                    )
-                    .append(
-                        `<div class="item-preview"><div class="mcview item-image-large ${namespace}" style="background-position:-${
-                            image_left * 128
-                        }px -${image_top * 128}px"></div></div>`
-                    );
-                element.append(tooltip);
-
-                return element;
-            } else {
-                return error_message(`映射表中不存在item:${namespace}:${name}`);
             }
         };
 
