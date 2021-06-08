@@ -275,7 +275,7 @@ mw.hook('wikipage.categories').add(() => {
 
                 return element;
             } else {
-                return `<div style="color:red">MCView解析失败: 映射表中不存在item:${namespace}:${name}</div>`;
+                return error_message(`映射表中不存在item:${namespace}:${name}`);
             }
         };
 
