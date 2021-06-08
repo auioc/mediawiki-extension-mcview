@@ -71,10 +71,6 @@ mw.hook('wikipage.categories').add(() => {
                         element.append(createItemStack(data));
                         break;
                     }
-                    case 'itemicon': {
-                        element.append(createItemIcon(data));
-                        break;
-                    }
                     case 'crafting': {
                         element.append(
                             createCraftTable(
@@ -277,47 +273,6 @@ mw.hook('wikipage.categories').add(() => {
             } else {
                 return error_message(`映射表中不存在item:${namespace}:${name}`);
             }
-        };
-
-        /**
-         * @deprecated
-         * @param {string} item_id
-         * @return {JQuery<HTMLElement>}
-         */
-        const createItemIcon = (item_id) => {
-            item_id = item_id.split(':');
-            let namespace = item_id[0];
-            let name = item_id[1];
-            let item_map = window.MCView.map[namespace].item;
-            let style_id = `mcview-itemicon-${namespace}`;
-            if ($(`style#${style_id}`).length == 0) {
-                $('head').append(`<style id="${style_id}"></style>`);
-                $(`style#${style_id}`).append(
-                    `.mcview.item-image-small.${namespace}{background-image:url(${item_map.image.small});}`
-                );
-            }
-            let item = item_map.map[name];
-            let element = $('<div></div>');
-            element.addClass('mcview-itemicon');
-            if (item) {
-                element.append(
-                    $('<div></div>')
-                        .css(
-                            'background-position',
-                            `-${(item.index % 32) * 16}px -${
-                                parseInt(item.index / 32) * 16
-                            }px`
-                        )
-                        .addClass(
-                            `mcview item-image item-image-small ${namespace}`
-                        )
-                );
-            } else {
-                element.append(
-                    `<span style="color:red">MCView解析失败: 映射表中不存在item:${namespace}:${name}</span>`
-                );
-            }
-            return element;
         };
 
         /**
