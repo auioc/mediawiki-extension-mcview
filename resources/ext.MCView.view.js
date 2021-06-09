@@ -110,7 +110,7 @@ mw.hook('wikipage.categories').add(() => {
                     oneOf: [{ type: 'null' }, { type: 'number' }],
                 },
             },
-            required: ['input', 'output', 'exp'],
+            required: ['input', 'output'],
             additionalProperties: false,
         };
 
@@ -476,7 +476,7 @@ mw.hook('wikipage.categories').add(() => {
                     .append(createItemSlot(output, furnace).addClass('large'))
             ); // output
 
-            if (exp !== null) {
+            if (exp !== undefined && exp !== null) {
                 furnace.append(
                     $('<div class="mcui-exp mcfont"></div>')
                         .append(`<span class="mcui-icon exp-orb"></span>`)
