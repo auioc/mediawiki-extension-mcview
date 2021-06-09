@@ -68,7 +68,6 @@ mw.hook('wikipage.categories').add(() => {
                     {
                         type: 'array',
                         items: { $ref: '#itemstack' },
-                        uniqueItems: true,
                     },
                 ],
             },
