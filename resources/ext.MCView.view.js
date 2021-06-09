@@ -58,7 +58,7 @@ mw.hook('wikipage.categories').add(() => {
                     },
                 },
                 additionalProperties: false,
-                required: ['id', 'count'],
+                required: ['id'],
             },
             itemslot: {
                 id: '#itemslot',
@@ -237,7 +237,7 @@ mw.hook('wikipage.categories').add(() => {
             let namespace = id[0],
                 name = id[1];
 
-            let stacksize = parseInt(item_stack.count);
+            let stacksize = item_stack.count ? parseInt(item_stack.count) : 1;
 
             let item_map = window.MCView.map[namespace].item;
 
