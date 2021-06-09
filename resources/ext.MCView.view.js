@@ -93,7 +93,7 @@ mw.hook('wikipage.categories').add(() => {
                 output: { $ref: '#itemslot' },
                 shapeless: { type: 'boolean' },
             },
-            required: ['input', 'output', 'shapeless'],
+            required: ['input', 'output'],
             additionalProperties: false,
         };
         const smelting_schema = {
