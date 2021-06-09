@@ -369,8 +369,13 @@ mw.hook('wikipage.categories').add(() => {
                     .append(createItemSlot(output, furnace).addClass('large'))
             ); // output
 
-            let exp_element = $('<div></div>');
-            exp_element.append(`<div>${exp}</div>`);
+            if (exp !== null) {
+                furnace.append(
+                    $('<div class="mcui-exp mcfont"></div>')
+                        .append(`<span class="mcui-icon exp-orb"></span>`)
+                        .append(`<span>${exp}</span>`)
+                );
+            }
 
             return mcui.clone().append(furnace);
         };
