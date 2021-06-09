@@ -1,4 +1,5 @@
 /* global mw */
+/* global ZSchema */
 
 /**
  * @typedef {Object} ItemStack
@@ -9,22 +10,21 @@
 // eslint-disable-next-line no-unused-vars
 mw.hook('wikipage.categories').add(() => {
     (async () => {
-        $.ajax({
-            type: 'GET',
-            url: mw.config.get('wgMCViewMapFile'),
-            dataType: 'json',
-            success: (j) => {
-                console.log('[MCView] MapJson: %o', j);
-                window.MCView = {};
-                window.MCView.map = j;
-                render();
-            },
-        });
+        const loadScript = (url, callback) => {
+            var script = document.createElement('script');
+            script.onload = function () {
+                callback();
+            };
+            script.src = url;
+            document.head.appendChild(script);
+        };
 
-        const error_message = (message) => {
+        const error_message = (message, detail = null) => {
+            let error_id = Math.random();
+            console.error('[MCViewC]<%s> %s %o', error_id, message, detail);
             return $('<div></div>')
-                .html(`[MCViewC]解析失败: ${message}`)
-                .addClass('mcview-error');
+                .addClass('mcview-error')
+                .attr('data-mcview-error', error_id);
         };
 
         const mcui = $('<div></div>').addClass('mcview mcui');
@@ -33,28 +33,116 @@ mw.hook('wikipage.categories').add(() => {
 
         const mcui_arrow_a =
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 26"><polygon points="0 10 18 10 18 0 20 0 20 2 22 2 22 4 24 4 24 6 26 6 26 8 28 8 28 10 30 10 30 12 32 12 32 14 30 14 30 16 28 16 28 18 26 18 26 20 24 20 24 22 22 22 22 24 20 24 20 26 18 26 18 24 18 16 0 16 0 10" class="a"/></svg>';
-
         const mcui_arrow_b =
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 30"><polygon class="a" points="0 12 28 12 28 0 30 0 30 2 32 2 32 4 34 4 34 6 36 6 36 8 38 8 38 10 40 10 40 12 42 12 42 14 44 14 44 16 42 16 42 18 40 18 40 20 38 20 38 22 36 22 36 24 34 24 34 26 32 26 32 28 30 28 30 30 28 30 28 18 0 18 0 12"/></svg>';
-
         const mcui_shapeless =
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 15"><polygon class="a" points="0 2 5 2 5 3 6 3 6 4 7 4 7 6 5 6 5 5 0 5 0 2"/><polygon class="a" points="0 13 5 13 5 12 6 12 6 11 7 11 7 10 8 10 8 9 9 9 9 8 10 8 10 7 11 7 11 6 12 6 12 5 15 5 15 7 16 7 16 6 17 6 17 5 18 5 18 4 19 4 19 3 18 3 18 2 17 2 17 1 16 1 16 0 15 0 15 2 12 2 12 3 11 3 11 4 10 4 10 5 9 5 9 6 8 6 8 7 7 7 7 8 6 8 6 9 5 9 5 10 0 10 0 13"/><polygon class="a" points="10 9 12 9 12 10 15 10 15 8 16 8 16 9 17 9 17 10 18 10 18 11 19 11 19 12 18 12 18 13 17 13 17 14 16 14 16 15 15 15 15 13 12 13 12 12 11 12 11 11 10 11 10 9"/></svg>';
-
         const mcui_fuel =
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><rect class="a" x="2" width="2" height="4"/><polygon class="a" points="6 4 6 14 4 14 4 18 6 18 6 26 0 26 0 24 2 24 2 20 0 20 0 12 2 12 2 8 4 8 4 4 6 4"/><rect class="a" x="12" y="4" width="2" height="4"/><polygon class="a" points="16 8 16 18 14 18 14 22 16 22 16 26 10 26 10 16 12 16 12 12 14 12 14 8 16 8"/><rect class="a" x="22" width="2" height="4"/><polygon class="a" points="20 4 22 4 22 8 24 8 24 12 26 12 26 20 24 20 24 24 26 24 26 26 20 26 20 18 22 18 22 14 20 14 20 4"/></svg>';
-
         const mcui_plus =
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 13 13"><polygon points="0 5 5 5 5 0 8 0 8 5 13 5 13 8 8 8 8 13 5 13 5 8 0 8 0 5" style="fill:#8b8b8b"/></svg>';
-        // const mcui_anvil_hammer = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"><defs><style>.a{fill:#444;}.b{fill:#493615;}.c{fill:#281e0b;}.d{fill:#684e1e;}.e{fill:#896727;}.f{fill:#c1c1c1;}.g{fill:#d8d8d8;}.h{fill:#fff;}</style></defs><polygon class="a" points="14 12 14 10 12 10 12 8 10 8 10 6 12 6 12 4 14 4 14 2 16 2 16 4 18 4 18 6 20 6 20 8 22 8 22 10 24 10 24 12 26 12 26 14 28 14 28 16 26 16 26 18 24 18 24 20 22 20 22 18 20 18 20 16 18 16 18 18 20 18 20 20 22 20 22 22 22.88 22 24 22 24 20 26 20 26 18 28 18 28 16 30 16 30 14 28 14 28 12 26 12 26 10 24 10 24 8 22 8 22 6 20 6 20 4 18 4 18 2 16 2 16 0 14 0 14 2 12 2 12 4 10 4 10 6 8 6 8 8 10 8 10 10 12 10 12 12 14 12"/><polygon class="b" points="0 26 2 26 2 24 4 24 4 22 6 22 6 20 8 20 8 18 10 18 10 16 12 16 12 14 14 14 14 12 16 12 16 14 14 14 14 16 12 16 12 18 10 18 10 20 8 20 8 22 6 22 6 24 4 24 4 26 2 26 2 28 0 28 0 26"/><polyline class="b" points="20 4 22 4 22 6 20 6"/><polygon class="c" points="2 28 4 28 4 26 6 26 6 24 8 24 8 22 10 22 10 20 12 20 12 18 14 18 14 16 16 16 16 14 18 14 18 16 16 16 16 18 14 18 14 20 12 20 12 22 10 22 10 24 8 24 8 26 6 26 6 28 4 28 4 30 2 30 2 28"/><polyline class="c" points="24 8 26 8 26 10 24 10"/><rect class="d" y="28" width="2" height="2"/><rect class="d" x="4" y="24" width="2" height="2"/><rect class="d" x="8" y="20" width="2" height="2"/><rect class="d" x="12" y="16" width="2" height="2"/><rect class="d" x="22" y="6" width="2" height="2"/><rect class="e" x="2" y="26" width="2" height="2"/><rect class="e" x="6" y="22" width="2" height="2"/><rect class="e" x="10" y="18" width="2" height="2"/><rect class="e" x="14" y="14" width="2" height="2"/><polygon class="f" points="18 6 20 6 20 8 22 8 22 10 24 10 24 12 22 12 22 10 20 10 20 8 18 8 18 6"/><rect class="g" x="16" y="4" width="2" height="2"/><rect class="g" x="12" y="8" width="2" height="2"/><rect class="g" x="20" y="16" width="2" height="2"/><rect class="g" x="24" y="12" width="2" height="2"/><polygon class="h" points="10 8 10 6 12 6 12 4 14 4 14 2 16 2 16 6 18 6 18 8 20 8 20 10 22 10 22 12 24 12 24 14 28 14 28 16 26 16 26 18 24 18 24 20 22 20 22 16 18 16 18 14 16 14 16 12 14 12 14 10 14 8 10 8"/></svg>';
 
-        const render = () => {
+        const base_json_schema = {
+            itemstack: {
+                id: '#itemstack',
+                type: 'object',
+                properties: {
+                    id: {
+                        type: 'string',
+                        pattern: '^.+:.+$',
+                    },
+                    count: {
+                        type: 'integer',
+                        maximum: 64,
+                        minimum: 1,
+                    },
+                },
+                additionalProperties: false,
+                required: ['id', 'count'],
+            },
+            itemslot: {
+                id: '#itemslot',
+                oneOf: [
+                    { type: 'null' },
+                    { $ref: '#itemstack' },
+                    {
+                        type: 'array',
+                        items: { $ref: '#itemstack' },
+                        uniqueItems: true,
+                    },
+                ],
+            },
+        };
+
+        const itemstack_schema = { $ref: '#itemstack' };
+        const itemslot_schema = { $ref: '#itemslot' };
+        const crafting_schema = {
+            type: 'object',
+            properties: {
+                input: {
+                    type: 'array',
+                    minItems: 3,
+                    maxItems: 3,
+                    items: {
+                        type: 'array',
+                        minItems: 3,
+                        maxItems: 3,
+                        items: { $ref: '#itemslot' },
+                    },
+                },
+                output: { $ref: '#itemslot' },
+                shapeless: { type: 'boolean' },
+            },
+            required: ['input', 'output', 'shapeless'],
+            additionalProperties: false,
+        };
+        const smelting_schema = {
+            type: 'object',
+            properties: {
+                input: {
+                    type: 'array',
+                    minItems: 2,
+                    maxItems: 2,
+                    items: { $ref: '#itemslot' },
+                },
+                output: { $ref: '#itemslot' },
+                exp: {
+                    oneOf: [{ type: 'null' }, { type: 'number' }],
+                },
+            },
+            required: ['input', 'output', 'exp'],
+            additionalProperties: false,
+        };
+
+        loadScript(
+            'https://cdn.jsdelivr.net/npm/z-schema@5.0.1/dist/ZSchema-browser-min.js',
+            () => {
+                $.ajax({
+                    type: 'GET',
+                    url: mw.config.get('wgMCViewMapFile'),
+                    dataType: 'json',
+                    success: (j) => {
+                        window.MCView = {};
+                        window.MCView.map = j;
+                        render(new ZSchema({ strictMode: true }));
+                    },
+                });
+            }
+        );
+
+        const render = (validator) => {
+            const validate = (data, schema) => {
+                schema.definitions = base_json_schema;
+                return validator.validate(data, schema);
+            };
+
             $('div.mcview-wrapper').each((index, element_item) => {
                 let element = $(element_item);
                 let type = element.data('mcview-type');
                 element.removeAttr('data-mcview-type');
 
                 if (element.children('.mcview-data').length === 0) {
-                    element.html(error_message('无效的Wrapper'));
+                    element.html(error_message('Invalid wrapper'));
                     return true;
                 }
 
@@ -62,36 +150,47 @@ mw.hook('wikipage.categories').add(() => {
                 try {
                     data = JSON.parse(element.children('.mcview-data').html());
                 } catch (error) {
-                    element.html(error_message(`无效的JSON数据 ${error}`));
+                    element.html(error_message(`Invalid JSON data: ${error}`));
                     return true;
                 }
 
                 switch (type) {
                     case 'itemstack': {
-                        element.append(createItemStack(data));
+                        if (validate(data, itemstack_schema)) {
+                            element.append(createItemStack(data));
+                            return true;
+                        }
                         break;
                     }
                     case 'itemslot': {
-                        element.append(createItemSlot(data, element));
+                        if (validate(data, itemslot_schema)) {
+                            element.append(createItemSlot(data, element));
+                            return true;
+                        }
                         break;
                     }
                     case 'crafting': {
-                        element.append(
-                            createCraftTable(
-                                data.input,
-                                data.output,
-                                data.shapeless
-                            )
-                        );
+                        if (validate(data, crafting_schema)) {
+                            element.append(
+                                createCraftTable(
+                                    data.input,
+                                    data.output,
+                                    data.shapeless
+                                )
+                            );
+                            return true;
+                        }
                         break;
                     }
                     case 'smelting': {
-                        element.append(
-                            createFurnace(data.input, data.output, data.exp)
-                        );
+                        if (validate(data, smelting_schema)) {
+                            element.append(
+                                createFurnace(data.input, data.output, data.exp)
+                            );
+                            return true;
+                        }
                         break;
                     }
-
                     case 'processing-a':
                     case 'processing-b':
                     case 'processing-c':
@@ -103,19 +202,25 @@ mw.hook('wikipage.categories').add(() => {
                                 data.output
                             )
                         );
-                        break;
+                        return true;
                     }
                     case 'inventory': {
                         element.append(
                             createInventory(data.items, data.size, data.title)
                         );
-                        break;
+                        return true;
                     }
                     default: {
-                        element.append(error_message(`未知的类型:${type}`));
-                        break;
+                        element.append(error_message(`Unknown type:${type}`));
+                        return true;
                     }
                 }
+                element.append(
+                    error_message(
+                        'JSON validation failed',
+                        validator.getLastErrors()
+                    )
+                );
             });
         };
 
@@ -187,7 +292,9 @@ mw.hook('wikipage.categories').add(() => {
 
                 return element;
             } else {
-                return error_message(`映射表中不存在item:${namespace}:${name}`);
+                return error_message(
+                    `item:${namespace}:${name} does not exist in the mapping table`
+                );
             }
         };
 
@@ -418,7 +525,7 @@ mw.hook('wikipage.categories').add(() => {
                 case 'a': {
                     input_element.append(createItemSlot(input));
                     output_element.append(createItemSlot(output));
-                    break;
+                    return element;
                 }
                 case 'b': {
                     input_element
@@ -426,7 +533,7 @@ mw.hook('wikipage.categories').add(() => {
                         .append(plus_element)
                         .append(createItemSlot(input[1]));
                     output_element.append(createItemSlot(output));
-                    break;
+                    return element;
                 }
                 case 'c': {
                     input_element.append(createItemSlot(input));
@@ -434,7 +541,7 @@ mw.hook('wikipage.categories').add(() => {
                         .append(createItemSlot(output[0]))
                         .append(plus_element)
                         .append(createItemSlot(output[1]));
-                    break;
+                    return element;
                 }
                 case 'd': {
                     input_element
@@ -445,13 +552,11 @@ mw.hook('wikipage.categories').add(() => {
                         .append(createItemSlot(output[0]))
                         .append(plus_element.clone())
                         .append(createItemSlot(output[1]));
-                    break;
+                    return element;
                 }
                 default:
-                    break;
+                    return false;
             }
-
-            return element;
         };
 
         /**
