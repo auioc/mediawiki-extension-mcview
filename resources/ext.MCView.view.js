@@ -606,6 +606,7 @@ mw.hook('wikipage.categories').add(() => {
         /**
          * @typedef {Object} InventoryItem
          * @property {number} index
+         * @property {number[]} pos
          * @property {ItemStack} item
          */
         /**
@@ -640,7 +641,7 @@ mw.hook('wikipage.categories').add(() => {
                                 slot_item.index
                             )}`
                         )
-                        .append(createItemStack(slot_item.item));
+                        .html(createItemStack(slot_item.item));
                     return true;
                 }
                 if (Object.prototype.hasOwnProperty.call(slot_item, 'pos')) {
@@ -648,22 +649,26 @@ mw.hook('wikipage.categories').add(() => {
                         .find(
                             `.mcui-row.row-${slot_item.pos[0]}>.mcui-col.col-${slot_item.pos[1]}`
                         )
-                        .append(createItemStack(slot_item.item));
+                        .html(createItemStack(slot_item.item));
                     return true;
                 }
             });
 
-            let title_elemnet = mcui_title.clone().html(title);
-
+            if (title !== undefined) {
+                let title_elemnet = mcui_title.clone().html(title);
+                return mcui
+                    .clone()
+                    .attr('style', 'padding-top:0px')
+                    .append(
+                        mcui_container
+                            .clone()
+                            .append(title_elemnet)
+                            .append(inv_element)
+                    );
+            }
             return mcui
                 .clone()
-                .attr('style', 'padding-top:0px')
-                .append(
-                    mcui_container
-                        .clone()
-                        .append(title_elemnet)
-                        .append(inv_element)
-                );
+                .append(mcui_container.clone().append(inv_element));
         };
     })();
 });
