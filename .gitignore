@@ -6,6 +6,8 @@ example.txt
 
 python/*
 
+test/*
+
 resources/test.js
 resources/assets/map/map.min.json
 resources/assets/json-schema/
