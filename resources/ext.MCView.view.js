@@ -647,7 +647,7 @@ mw.hook('wikipage.categories').add(() => {
                 if (Object.prototype.hasOwnProperty.call(slot_item, 'pos')) {
                     inv_element
                         .find(
-                            `.mcui-row.row-${slot_item.pos[0]}>.mcui-col.col-${slot_item.pos[1]}`
+                            `.mcui-row.row-${slot_item.pos[1]}>.mcui-col.col-${slot_item.pos[0]}`
                         )
                         .html(createItemStack(slot_item.item));
                     return true;
