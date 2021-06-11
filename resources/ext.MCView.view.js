@@ -10,6 +10,8 @@
 // eslint-disable-next-line no-unused-vars
 mw.hook('wikipage.categories').add(() => {
     (async () => {
+        'use strict';
+
         const loadScript = (url, callback) => {
             var script = document.createElement('script');
             script.onload = function () {
@@ -112,6 +114,42 @@ mw.hook('wikipage.categories').add(() => {
             required: ['input', 'output'],
             additionalProperties: false,
         };
+        const inventory_schema = {
+            type: 'object',
+            properties: {
+                items: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            index: { type: 'integer', minimum: 0 },
+                            pos: {
+                                type: 'array',
+                                minItems: 2,
+                                maxItems: 2,
+                                items: { type: 'integer', minimum: 0 },
+                            },
+                            item: { $ref: '#itemstack' },
+                        },
+                        oneOf: [
+                            { required: ['index', 'item'] },
+                            { required: ['pos', 'item'] },
+                        ],
+                        additionalProperties: false,
+                    },
+                    uniqueItems: true,
+                },
+                size: {
+                    type: 'array',
+                    minItems: 2,
+                    maxItems: 2,
+                    items: { type: 'integer', minimum: 1 },
+                },
+                title: { type: 'string' },
+            },
+            required: ['items', 'size'],
+            additionalProperties: false,
+        };
 
         loadScript(
             'https://cdn.jsdelivr.net/npm/z-schema@5.0.1/dist/ZSchema-browser-min.js',
@@ -123,7 +161,7 @@ mw.hook('wikipage.categories').add(() => {
                     success: (j) => {
                         window.MCView = {};
                         window.MCView.map = j;
-                        render(new ZSchema({ strictMode: true }));
+                        render(new ZSchema());
                     },
                 });
             }
@@ -190,6 +228,19 @@ mw.hook('wikipage.categories').add(() => {
                         }
                         break;
                     }
+                    case 'inventory': {
+                        if (validate(data, inventory_schema)) {
+                            element.append(
+                                createInventory(
+                                    data.items,
+                                    data.size,
+                                    data.title
+                                )
+                            );
+                            return true;
+                        }
+                        break;
+                    }
                     case 'processing-a':
                     case 'processing-b':
                     case 'processing-c':
@@ -200,12 +251,6 @@ mw.hook('wikipage.categories').add(() => {
                                 data.input,
                                 data.output
                             )
-                        );
-                        return true;
-                    }
-                    case 'inventory': {
-                        element.append(
-                            createInventory(data.items, data.size, data.title)
                         );
                         return true;
                     }
