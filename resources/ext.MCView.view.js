@@ -161,111 +161,111 @@ mw.hook('wikipage.categories').add(() => {
                     success: (j) => {
                         window.MCView = {};
                         window.MCView.map = j;
-                        render(new ZSchema());
+                        window.MCView.validator = new ZSchema();
+                        window.MCView.render = render;
+                        $('div.mcview-wrapper').each((index, element_item) => {
+                            let element = $(element_item);
+                            render(element);
+                        });
                     },
                 });
             }
         );
 
-        const render = (validator) => {
+        const render = (element) => {
             const validate = (data, schema) => {
                 schema.definitions = base_json_schema;
-                return validator.validate(data, schema);
+                return window.MCView.validator.validate(data, schema);
             };
 
-            $('div.mcview-wrapper').each((index, element_item) => {
-                let element = $(element_item);
-                let type = element.data('mcview-type');
-                element.removeAttr('data-mcview-type');
+            let type = element.data('mcview-type');
 
-                if (element.children('.mcview-data').length === 0) {
-                    element.html(error_message('Invalid wrapper'));
-                    return true;
+            element.children().not('.mcview-data').remove();
+
+            if (element.children('.mcview-data').length === 0) {
+                element.html(error_message('Invalid wrapper'));
+                return false;
+            }
+
+            let data = {};
+            try {
+                data = JSON.parse(element.children('.mcview-data').html());
+            } catch (error) {
+                element.html(error_message(`Invalid JSON data: ${error}`));
+                return false;
+            }
+
+            switch (type) {
+                case 'itemstack': {
+                    if (validate(data, itemstack_schema)) {
+                        element.append(createItemStack(data));
+                        return true;
+                    }
+                    break;
                 }
-
-                let data = {};
-                try {
-                    data = JSON.parse(element.children('.mcview-data').html());
-                } catch (error) {
-                    element.html(error_message(`Invalid JSON data: ${error}`));
-                    return true;
+                case 'itemslot': {
+                    if (validate(data, itemslot_schema)) {
+                        element.append(createItemSlot(data, element));
+                        return true;
+                    }
+                    break;
                 }
-
-                switch (type) {
-                    case 'itemstack': {
-                        if (validate(data, itemstack_schema)) {
-                            element.append(createItemStack(data));
-                            return true;
-                        }
-                        break;
-                    }
-                    case 'itemslot': {
-                        if (validate(data, itemslot_schema)) {
-                            element.append(createItemSlot(data, element));
-                            return true;
-                        }
-                        break;
-                    }
-                    case 'crafting': {
-                        if (validate(data, crafting_schema)) {
-                            element.append(
-                                createCraftTable(
-                                    data.input,
-                                    data.output,
-                                    data.shapeless
-                                )
-                            );
-                            return true;
-                        }
-                        break;
-                    }
-                    case 'smelting': {
-                        if (validate(data, smelting_schema)) {
-                            element.append(
-                                createFurnace(data.input, data.output, data.exp)
-                            );
-                            return true;
-                        }
-                        break;
-                    }
-                    case 'inventory': {
-                        if (validate(data, inventory_schema)) {
-                            element.append(
-                                createInventory(
-                                    data.items,
-                                    data.size,
-                                    data.title
-                                )
-                            );
-                            return true;
-                        }
-                        break;
-                    }
-                    case 'processing-a':
-                    case 'processing-b':
-                    case 'processing-c':
-                    case 'processing-d': {
+                case 'crafting': {
+                    if (validate(data, crafting_schema)) {
                         element.append(
-                            createProcessor(
-                                type.split('-')[1],
+                            createCraftTable(
                                 data.input,
-                                data.output
+                                data.output,
+                                data.shapeless
                             )
                         );
                         return true;
                     }
-                    default: {
-                        element.append(error_message(`Unknown type:${type}`));
+                    break;
+                }
+                case 'smelting': {
+                    if (validate(data, smelting_schema)) {
+                        element.append(
+                            createFurnace(data.input, data.output, data.exp)
+                        );
                         return true;
                     }
+                    break;
                 }
-                element.append(
-                    error_message(
-                        'JSON validation failed',
-                        validator.getLastErrors()
-                    )
-                );
-            });
+                case 'inventory': {
+                    if (validate(data, inventory_schema)) {
+                        element.append(
+                            createInventory(data.items, data.size, data.title)
+                        );
+                        return true;
+                    }
+                    break;
+                }
+                case 'processing-a':
+                case 'processing-b':
+                case 'processing-c':
+                case 'processing-d': {
+                    element.append(
+                        createProcessor(
+                            type.split('-')[1],
+                            data.input,
+                            data.output
+                        )
+                    );
+                    return true;
+                }
+                default: {
+                    element.append(error_message(`Unknown type:${type}`));
+                    return false;
+                }
+            }
+            element.append(
+                error_message(
+                    'JSON validation failed',
+                    window.MCView.validator.getLastErrors()
+                )
+            );
+            return false;
         };
 
         /**
