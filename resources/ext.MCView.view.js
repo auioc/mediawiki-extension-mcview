@@ -58,6 +58,11 @@ mw.hook('wikipage.categories').add(() => {
                         maximum: 64,
                         minimum: 1,
                     },
+                    durability: {
+                        type: 'number',
+                        maximum: 1,
+                        minimum: 0,
+                    },
                 },
                 additionalProperties: false,
                 required: ['id'],
@@ -274,7 +279,7 @@ mw.hook('wikipage.categories').add(() => {
          */
         const createItemStack = (item_stack) => {
             if (item_stack === null) {
-                return $('<div class="mcui-slot-placeholder"></div>');
+                return null;
             }
 
             let id = String(item_stack.id).split(':');
@@ -282,6 +287,7 @@ mw.hook('wikipage.categories').add(() => {
                 name = id[1];
 
             let stacksize = item_stack.count ? item_stack.count : 1;
+            let durability = item_stack.durability;
 
             let item_map = window.MCView.map[namespace].item;
 
@@ -322,6 +328,24 @@ mw.hook('wikipage.categories').add(() => {
                     .addClass('mcview item-stacksize mcfont')
                     .html(stacksize);
                 element.append(stackcount_html);
+            }
+
+            if (durability !== undefined) {
+                let durability_html = $('<div></div>')
+                    .addClass('mcview item-durability')
+                    .append(
+                        $('<span></span>')
+                            .addClass('value')
+                            .css({
+                                width: `${Number(durability * 100).toFixed(
+                                    1
+                                )}%`,
+                                backgroundColor: `hsl(${
+                                    durability * 128
+                                },100%,50%)`,
+                            })
+                    );
+                element.append(durability_html);
             }
 
             let tooltip = $('<div></div>')

@@ -61,6 +61,18 @@
     color: white;
     text-shadow: 2px 2px 0 #3f3f3f;
 }
+.mcview.item-durability {
+    position: absolute;
+    width: 28px;
+    height: 4px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #373737;
+}
+.item-durability > .value {
+    position: absolute;
+    height: 2.6px;
+}
 
 .mcview-itemicon {
     position: relative;
