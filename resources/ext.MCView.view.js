@@ -281,7 +281,7 @@ mw.hook('wikipage.categories').add(() => {
             let namespace = id[0],
                 name = id[1];
 
-            let stacksize = item_stack.count ? parseInt(item_stack.count) : 1;
+            let stacksize = item_stack.count ? item_stack.count : 1;
 
             let item_map = window.MCView.map[namespace].item;
 
@@ -298,48 +298,48 @@ mw.hook('wikipage.categories').add(() => {
 
             let item = item_map.map[name];
 
-            if (item) {
-                let element = $('<div></div>').addClass('mcview-itemstack');
-
-                let image_left = item.index % 32;
-                let image_top = parseInt(item.index / 32);
-
-                let image_html = $('<div></div>')
-                    .addClass(
-                        `mcview item-image item-image-medium ${namespace}`
-                    )
-                    .css(
-                        'background-position',
-                        `-${image_left * 32}px -${image_top * 32}px`
-                    );
-                element.append(image_html);
-
-                let stackcount_html = $('<span></span>')
-                    .addClass('mcview item-stacksize mcfont')
-                    .html(stacksize > 1 ? stacksize : '');
-                element.append(stackcount_html);
-
-                let tooltip = $('<div></div>')
-                    .addClass('mcview item-tooltip')
-                    .append(
-                        `<div class="zh-name">${item.zh_name} (${item.en_name})</div>`
-                    )
-                    .append(
-                        `<div class="register-name">${item.register_name}</div>`
-                    )
-                    .append(
-                        `<div class="item-preview"><div class="mcview item-image-large ${namespace}" style="background-position:-${
-                            image_left * 128
-                        }px -${image_top * 128}px"></div></div>`
-                    );
-                element.append(tooltip);
-
-                return element;
-            } else {
+            if (!item) {
                 return error_message(
                     `item:${namespace}:${name} does not exist in the mapping table`
                 );
             }
+
+            let element = $('<div></div>').addClass('mcview-itemstack');
+
+            let image_left = item.index % 32;
+            let image_top = parseInt(item.index / 32);
+
+            let image_html = $('<div></div>')
+                .addClass(`mcview item-image item-image-medium ${namespace}`)
+                .css(
+                    'background-position',
+                    `-${image_left * 32}px -${image_top * 32}px`
+                );
+            element.append(image_html);
+
+            if (stacksize > 1) {
+                let stackcount_html = $('<span></span>')
+                    .addClass('mcview item-stacksize mcfont')
+                    .html(stacksize);
+                element.append(stackcount_html);
+            }
+
+            let tooltip = $('<div></div>')
+                .addClass('mcview item-tooltip')
+                .append(
+                    `<div class="zh-name">${item.zh_name} (${item.en_name})</div>`
+                )
+                .append(
+                    `<div class="register-name">${item.register_name}</div>`
+                )
+                .append(
+                    `<div class="item-preview"><div class="mcview item-image-large ${namespace}" style="background-position:-${
+                        image_left * 128
+                    }px -${image_top * 128}px"></div></div>`
+                );
+            element.append(tooltip);
+
+            return element;
         };
 
         /**
