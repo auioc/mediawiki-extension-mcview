@@ -401,42 +401,47 @@ mw.hook('wikipage.categories').add(() => {
                             }
                         );
 
-                        let switch_item_timer = {
-                            timer: 0,
-                            index: 0,
-                            start: function () {
-                                switch_item_timer.timer = setInterval(() => {
-                                    animated_slot
-                                        .children('.animate-item')
-                                        .eq(switch_item_timer.index)
-                                        .show()
-                                        .siblings()
-                                        .hide();
-                                    switch_item_timer.index++;
-                                    if (
-                                        switch_item_timer.index ==
-                                        itemstack_array.length
-                                    ) {
-                                        switch_item_timer.index = 0;
-                                    }
-                                }, 1000);
-                            },
-                            suspend: function () {
-                                clearInterval(switch_item_timer.timer);
-                            },
-                        };
-                        switch_item_timer.start();
+                        if (warpper_element !== null) {
+                            let switch_item_timer = {
+                                timer: 0,
+                                index: 0,
+                                start: function () {
+                                    switch_item_timer.timer = setInterval(
+                                        () => {
+                                            animated_slot
+                                                .children('.animate-item')
+                                                .eq(switch_item_timer.index)
+                                                .show()
+                                                .siblings()
+                                                .hide();
+                                            switch_item_timer.index++;
+                                            if (
+                                                switch_item_timer.index ==
+                                                itemstack_array.length
+                                            ) {
+                                                switch_item_timer.index = 0;
+                                            }
+                                        },
+                                        1000
+                                    );
+                                },
+                                suspend: function () {
+                                    clearInterval(switch_item_timer.timer);
+                                },
+                            };
+                            switch_item_timer.start();
 
-                        warpper_element
-                            .get(0)
-                            .addEventListener('mouseover', () => {
-                                switch_item_timer.suspend();
-                            });
-                        warpper_element
-                            .get(0)
-                            .addEventListener('mouseleave', () => {
-                                switch_item_timer.start();
-                            });
+                            warpper_element
+                                .get(0)
+                                .addEventListener('mouseover', () => {
+                                    switch_item_timer.suspend();
+                                });
+                            warpper_element
+                                .get(0)
+                                .addEventListener('mouseleave', () => {
+                                    switch_item_timer.start();
+                                });
+                        }
 
                         return animated_slot;
                     };
