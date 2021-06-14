@@ -139,6 +139,7 @@ mw.hook('wikipage.categories').add(() => {
                                 items: { type: 'integer', minimum: 0 },
                             },
                             item: { $ref: '#itemstack' },
+                            slot: { type: 'boolean' },
                         },
                         oneOf: [
                             { required: ['index', 'item'] },
@@ -154,6 +155,7 @@ mw.hook('wikipage.categories').add(() => {
                     maxItems: 2,
                     items: { type: 'integer', minimum: 1 },
                 },
+                slot: { type: 'boolean' },
                 title: { type: 'string' },
             },
             required: ['items', 'size'],
@@ -244,7 +246,12 @@ mw.hook('wikipage.categories').add(() => {
                 case 'inventory': {
                     if (validate(data, inventory_schema)) {
                         element.append(
-                            createInventory(data.items, data.size, data.title)
+                            createInventory(
+                                data.items,
+                                data.size,
+                                data.slot,
+                                data.title
+                            )
                         );
                         return true;
                     }
@@ -638,14 +645,16 @@ mw.hook('wikipage.categories').add(() => {
          * @property {number} index
          * @property {number[]} pos
          * @property {ItemStack} item
+         * @property {boolean} slot
          */
         /**
          * @param {InventoryItem[]} item_list
          * @param {number[]} size
+         * @param {boolean} display_slot
          * @param {string} title
          * @return {JQuery<HTMLElement>}
          */
-        const createInventory = (item_list, size, title) => {
+        const createInventory = (item_list, size, display_slot, title) => {
             let inv_element = $('<div></div>').addClass('mcui-inventory');
             for (let r = 0; r < size[1]; r++) {
                 let row_element = $('<div></div>').addClass(
@@ -653,35 +662,47 @@ mw.hook('wikipage.categories').add(() => {
                 );
                 for (let s = 0; s < size[0]; s++) {
                     row_element.append(
-                        $('<div></div>').addClass(
-                            `mcui-slot slot-${
-                                r * size[0] + s
-                            } mcui-col col-${s}`
-                        )
+                        $('<div></div>')
+                            .addClass(
+                                `slot-${r * size[0] + s} mcui-col col-${s}`
+                            )
+                            .append(
+                                $('<div></div>').addClass(
+                                    `mcui-slot${
+                                        display_slot === false
+                                            ? '-placeholder'
+                                            : ''
+                                    }`
+                                )
+                            )
                     );
                 }
                 inv_element.append(row_element);
             }
 
             item_list.forEach((slot_item) => {
-                if (Object.prototype.hasOwnProperty.call(slot_item, 'index')) {
-                    inv_element
-                        .find(
-                            `.mcui-row>.mcui-slot.slot-${Number(
-                                slot_item.index
-                            )}`
-                        )
-                        .html(createItemStack(slot_item.item));
-                    return true;
-                }
-                if (Object.prototype.hasOwnProperty.call(slot_item, 'pos')) {
-                    inv_element
-                        .find(
-                            `.mcui-row.row-${slot_item.pos[1]}>.mcui-col.col-${slot_item.pos[0]}`
-                        )
-                        .html(createItemStack(slot_item.item));
-                    return true;
-                }
+                inv_element
+                    .find(
+                        Object.prototype.hasOwnProperty.call(slot_item, 'index')
+                            ? `.mcui-row>.slot-${Number(slot_item.index)}`
+                            : Object.prototype.hasOwnProperty.call(
+                                  slot_item,
+                                  'pos'
+                              )
+                            ? `.mcui-row.row-${slot_item.pos[1]}>.mcui-col.col-${slot_item.pos[0]}`
+                            : null
+                    )
+                    .html(
+                        $('<div></div>')
+                            .addClass(
+                                `mcui-slot${
+                                    slot_item.slot === false
+                                        ? '-placeholder'
+                                        : ''
+                                }`
+                            )
+                            .append(createItemStack(slot_item.item))
+                    );
             });
 
             if (title !== undefined) {

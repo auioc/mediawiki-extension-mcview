@@ -158,6 +158,12 @@
     margin: 0 18px;
 }
 
+.mcui-slot-placeholder {
+    width: 32px;
+    height: 32px;
+    margin: 2px 2px;
+}
+
 .mcui-exp {
     position: absolute;
     top: 92px;
