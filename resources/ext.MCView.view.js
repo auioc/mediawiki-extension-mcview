@@ -47,30 +47,34 @@ mw.hook('wikipage.categories').add(() => {
         const base_json_schema = {
             itemstack: {
                 id: '#itemstack',
-                type: 'object',
-                properties: {
-                    id: {
-                        type: 'string',
-                        pattern: '^.+:.+$',
+                oneOf: [
+                    {
+                        type: 'object',
+                        properties: {
+                            id: {
+                                type: 'string',
+                                pattern: '^.+:.+$',
+                            },
+                            count: {
+                                type: 'integer',
+                                maximum: 64,
+                                minimum: 1,
+                            },
+                            durability: {
+                                type: 'number',
+                                maximum: 1,
+                                minimum: 0,
+                            },
+                        },
+                        additionalProperties: false,
+                        required: ['id'],
                     },
-                    count: {
-                        type: 'integer',
-                        maximum: 64,
-                        minimum: 1,
-                    },
-                    durability: {
-                        type: 'number',
-                        maximum: 1,
-                        minimum: 0,
-                    },
-                },
-                additionalProperties: false,
-                required: ['id'],
+                    { type: 'null' },
+                ],
             },
             itemslot: {
                 id: '#itemslot',
                 oneOf: [
-                    { type: 'null' },
                     { $ref: '#itemstack' },
                     {
                         type: 'array',
