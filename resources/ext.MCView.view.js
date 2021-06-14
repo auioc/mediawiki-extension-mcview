@@ -283,7 +283,7 @@ mw.hook('wikipage.categories').add(() => {
          */
         const createItemStack = (item_stack) => {
             if (item_stack === null) {
-                return null;
+                return $('<div></div>').addClass('mcui-itemstack-placeholder');
             }
 
             let id = String(item_stack.id).split(':');
