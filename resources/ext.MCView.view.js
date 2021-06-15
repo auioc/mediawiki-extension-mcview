@@ -308,9 +308,6 @@ mw.hook('wikipage.categories').add(() => {
                 $(`style#${style_id}`).append(
                     `.mcview.item-image-medium.${namespace}{background-image:url(${item_map.image.medium});}`
                 );
-                $(`style#${style_id}`).append(
-                    `.mcview.item-image-large.${namespace}{background-image:url(${item_map.image.large});}`
-                );
             }
 
             let item = item_map.map[name];
@@ -366,11 +363,6 @@ mw.hook('wikipage.categories').add(() => {
                 )
                 .append(
                     `<div class="register-name">${item.register_name}</div>`
-                )
-                .append(
-                    `<div class="item-preview"><div class="mcview item-image-large ${namespace}" style="background-position:-${
-                        image_left * 128
-                    }px -${image_top * 128}px"></div></div>`
                 );
             element.append(tooltip);
 

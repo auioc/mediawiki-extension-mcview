@@ -32,7 +32,6 @@
     top: 8px;
     margin: 6px;
     padding: 0.4em;
-    min-width: 140px;
     background-color: #372237;
     border: 2px solid #5519af;
     border-radius: 4px;
@@ -44,10 +43,6 @@
 }
 .mcview-itemstack:hover .mcview.item-tooltip {
     display: block;
-}
-.mcview.item-tooltip .item-preview {
-    margin-top: 0.6em;
-    display: inline-block;
 }
 .mcview.item-tooltip .register-name,
 .mcview.item-tooltip .zh-name {
