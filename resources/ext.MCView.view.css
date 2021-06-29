@@ -122,6 +122,9 @@
 .mcui-slot.large {
     padding: 8px;
 }
+.mcui-slot > .mcview-itemstack {
+    position: absolute;
+}
 
 .mcui-crafting-table .mcui-arrow {
     width: 32px;
