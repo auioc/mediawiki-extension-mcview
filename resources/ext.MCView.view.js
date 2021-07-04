@@ -349,7 +349,7 @@ mw.hook('wikipage.categories').add(() => {
                                     1
                                 )}%`,
                                 backgroundColor: `hsl(${
-                                    durability * 128
+                                    durability * 108
                                 },100%,50%)`,
                             })
                     );
