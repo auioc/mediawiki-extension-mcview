@@ -312,7 +312,7 @@ mw.hook('wikipage.categories').add(() => {
             }
 
             let tooltip = $('<div></div>')
-                .addClass('mcview item-tooltip')
+                .addClass('mcview item-tooltip mcfont unifont')
                 .append(`<div class="zh-name">${item.zh_name} (${item.en_name})</div>`)
                 .append(`<div class="register-name">${item.register_name}</div>`);
             element.append(tooltip);
