@@ -1,17 +1,29 @@
 @import 'mediawiki.mixins';
 
 @font-face {
-    font-family: minecraft;
+    font-family: 'Unifont';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url('https://cdn.jsdelivr.net/npm/@fontsource/unifont@4.5.2/files/unifont-latin-400-normal.woff2')
+            format('woff2'),
+        url('https://cdn.jsdelivr.net/npm/@fontsource/unifont@4.5.2/files/unifont-latin-400-normal.woff') format('woff');
+}
+@font-face {
+    font-family: 'minecraft';
     src: url(../assets/fonts/minecraft.woff);
 }
 @font-face {
-    font-family: sga;
+    font-family: 'sga';
     src: url(../assets/fonts/sga.woff);
     unicode-range: U+0041-005A;
 }
 
 .mcfont {
     font-family: minecraft;
+}
+.mcfont.unifont {
+    font-family: Unifont;
 }
 .mcfont.sga {
     font-family: sga;

@@ -44,10 +44,12 @@ class MCViewHooks
     {
         $parser->getOutput()->addModules('ext.MCView.font');
 
-        $sga = '';
+        $font = '';
         $style = '';
-        if (isset($args['sga'])) {
-            $sga = ' sga';
+        if (isset($args['unifont'])) {
+            $font = ' unifont';
+        } elseif (isset($args['sga'])) {
+            $font = ' sga';
         }
         if (isset($args['style'])) {
             $style = 'style="'.$args['style'].'"';
@@ -55,6 +57,6 @@ class MCViewHooks
 
         $output = $parser->recursiveTagParse($input, $frame);
 
-        return '<span class="mcfont'.$sga.'"'.$style.'>'.$output.'</span>';
+        return '<span class="mcfont'.$font.'"'.$style.'>'.$output.'</span>';
     }
 }
