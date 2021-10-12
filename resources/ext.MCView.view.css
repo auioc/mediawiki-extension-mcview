@@ -25,6 +25,7 @@
     height: 32px;
 }
 
+.mcview.tooltip,
 .mcview.item-tooltip {
     display: none;
     position: absolute;
@@ -182,4 +183,84 @@
 }
 .mcui-active svg .a {
     fill: white;
+}
+
+.mcview-textcomponent {
+    position: relative;
+    font-size: x-large;
+    color: #ffffff;
+    text-shadow: 2px 1px 0 #3f3f3f;
+    line-height: 1em;
+}
+.mcview-textcomponent:hover > .mcview.tooltip {
+    display: block;
+}
+
+.mcview.black {
+    color: #000000;
+    text-shadow: 2px 1px 0 #000000;
+}
+.mcview.dark_blue {
+    color: #0000aa;
+    text-shadow: 2px 1px 0 #00002a;
+}
+.mcview.dark_green {
+    color: #00aa00;
+    text-shadow: 2px 1px 0 #002a00;
+}
+.mcview.dark_aqua {
+    color: #00aaaa;
+    text-shadow: 2px 1px 0 #002a2a;
+}
+.mcview.dark_red {
+    color: #aa0000;
+    text-shadow: 2px 1px 0 #2a0000;
+}
+.mcview.dark_purple {
+    color: #aa00aa;
+    text-shadow: 2px 1px 0 #2a002a;
+}
+.mcview.gold {
+    color: #ffaa00;
+    text-shadow: 2px 1px 0 #2a2a00;
+}
+.mcview.gray {
+    color: #aaaaaa;
+    text-shadow: 2px 1px 0 #2a2a2a;
+}
+.mcview.dark_gray {
+    color: #555555;
+    text-shadow: 2px 1px 0 #151515;
+}
+.mcview.blue {
+    color: #5555ff;
+    text-shadow: 2px 1px 0 #15153f;
+}
+.mcview.green {
+    color: #55ff55;
+    text-shadow: 2px 1px 0 #153f15;
+}
+.mcview.aqua {
+    color: #55ffff;
+    text-shadow: 2px 1px 0 #153f3f;
+}
+.mcview.red {
+    color: #ff5555;
+    text-shadow: 2px 1px 0 #3f1515;
+}
+.mcview.light_purple {
+    color: #ff55ff;
+    text-shadow: 2px 1px 0 #3f153f;
+}
+.mcview.yellow {
+    color: #ffff55;
+    text-shadow: 2px 1px 0 #3f3f15;
+}
+.mcview.white {
+    color: #ffffff;
+    text-shadow: 2px 1px 0 #3f3f3f;
+}
+.mcview.minecoin_gold {
+    color: #ddd605;
+    text-shadow: 2px 1px 0 #373501;
 }

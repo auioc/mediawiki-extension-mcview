@@ -213,6 +213,10 @@ mw.hook('wikipage.categories').add(() => {
                     }
                     break;
                 }
+                case 'text': {
+                    element.append(createTextComponent(data));
+                    return true;
+                }
                 case 'crafting': {
                     if (validate(data, crafting_schema)) {
                         element.append(createCraftTable(data.input, data.output, data.shapeless));
@@ -579,6 +583,100 @@ mw.hook('wikipage.categories').add(() => {
                     .append(mcui_container.clone().append(title_elemnet).append(inv_element));
             }
             return mcui.clone().append(mcui_container.clone().append(inv_element));
+        };
+
+        /**
+         * @typedef {Object} HoverEventContents
+         * @property {string} id
+         * @property {number} count
+         */
+        /**
+         * @typedef {Object} HoverEvent
+         * @property {string} action
+         * @property {HoverEventContents|TextComponent} contents
+         */
+        /**
+         * @typedef {Object} TextComponent
+         * @property {string} text
+         * @property {string} color
+         * @property {boolean} bold
+         * @property {boolean} italic
+         * @property {boolean} underlined
+         * @property {boolean} strikethrough
+         * @property {boolean} obfuscated
+         * @property {HoverEvent} hoverEvent
+         * @property {TextComponent[]} extra
+         */
+        /**
+         * @param {TextComponent|TextComponent[]} data
+         * @return {JQuery<HTMLElement>}
+         */
+        const createTextComponent = (data) => {
+            /**
+             * @param {TextComponent} data
+             * @return {JQuery<HTMLElement>}
+             */
+            const createTextComponentS = (data) => {
+                let element = $('<span></span>').addClass('mcview mcview-textcomponent mcfont unifont');
+
+                element.html(data.text.replace('\n', '<br/>'));
+
+                if (data.color !== undefined) {
+                    if (/^#[0-9a-fA-F]{6}$/.test(data.color)) {
+                        element.css('color', data.color);
+                    } else {
+                        element.addClass(data.color);
+                    }
+                }
+
+                (data.underlined === undefined) & (data.strikethrough === undefined)
+                    ? null
+                    : element.css('text-decoration', () => {
+                          if (!data.underlined & !data.strikethrough) return 'none';
+                          let s = '';
+                          if (data.underlined) s += 'underline';
+                          if (data.strikethrough) s += ' line-through';
+                          return s;
+                      });
+
+                data.bold !== undefined ? element.css('font-weight', data.bold ? 'bold' : 'normal') : null;
+                data.italic !== undefined ? element.css('font-style', data.italic ? 'italic' : 'normal') : null;
+
+                if (data.hoverEvent !== undefined) {
+                    element.append(
+                        $('<span></span>')
+                            .addClass('mcview tooltip mcfont unifont')
+                            .html(() => {
+                                if (data.hoverEvent.action === 'show_text') {
+                                    return createTextComponent(data.hoverEvent.contents);
+                                } else if (data.hoverEvent.action === 'show_item') {
+                                    return createItemStack({
+                                        id: data.hoverEvent.contents.id,
+                                        count: data.hoverEvent.contents.count,
+                                    });
+                                }
+                            })
+                    );
+                }
+
+                // if (data.extra !== undefined) { // TODO
+                //     data.extra.forEach((value) => {
+                //         element.append($('<span></span>').html(createTextComponent(value)));
+                //     });
+                // }
+
+                return element;
+            };
+
+            if (Array.isArray(data)) {
+                let element = $('<span></span>');
+                data.forEach((value) => {
+                    element.append(createTextComponentS(value));
+                });
+                return element;
+            } else {
+                return createTextComponentS(data);
+            }
         };
     })();
 });
