@@ -1,7 +1,7 @@
 {
     "name": "MCView",
     "version": "0.3.0",
-    "author": ["WakelessSloth56"],
+    "author": "[https://github.com/WakelessSloth56 WakelessSloth56]",
     "url": "https://github.com/WakelessSloth56/mediawiki-extension-mcview",
     "description": "Render Minecraft UI",
     "license-name": "GPL-2.0-or-later",
