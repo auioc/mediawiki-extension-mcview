@@ -24,7 +24,9 @@ mw.hook('wikipage.categories').add(() => {
         const error_message = (message, detail = null) => {
             let error_id = Math.random();
             console.error('[MCViewC]<%s> %s %o', error_id, message, detail);
-            return $('<div></div>').addClass('mcview-error').attr('data-mcview-error', error_id);
+            return $('<div></div>')
+                .addClass('mcview-error')
+                .attr('data-mcview-error', error_id);
         };
 
         const mcui = $('<div></div>').addClass('mcview mcui');
@@ -139,7 +141,10 @@ mw.hook('wikipage.categories').add(() => {
                             item: { $ref: '#itemstack' },
                             slot: { type: 'boolean' },
                         },
-                        oneOf: [{ required: ['index', 'item'] }, { required: ['pos', 'item'] }],
+                        oneOf: [
+                            { required: ['index', 'item'] },
+                            { required: ['pos', 'item'] },
+                        ],
                         additionalProperties: false,
                     },
                     uniqueItems: true,
@@ -157,23 +162,26 @@ mw.hook('wikipage.categories').add(() => {
             additionalProperties: false,
         };
 
-        loadScript('https://cdn.jsdelivr.net/npm/z-schema@5.0.1/dist/ZSchema-browser-min.js', () => {
-            $.ajax({
-                type: 'GET',
-                url: mw.config.get('wgMCViewMapFile'),
-                dataType: 'json',
-                success: (j) => {
-                    window.MCView = {};
-                    window.MCView.map = j;
-                    window.MCView.validator = new ZSchema();
-                    window.MCView.render = render;
-                    $('div.mcview-wrapper').each((index, element_item) => {
-                        let element = $(element_item);
-                        render(element);
-                    });
-                },
-            });
-        });
+        loadScript(
+            'https://cdn.jsdelivr.net/npm/z-schema@5.0.1/dist/ZSchema-browser-min.js',
+            () => {
+                $.ajax({
+                    type: 'GET',
+                    url: mw.config.get('wgMCViewMapFile'),
+                    dataType: 'json',
+                    success: (j) => {
+                        window.MCView = {};
+                        window.MCView.map = j;
+                        window.MCView.validator = new ZSchema();
+                        window.MCView.render = render;
+                        $('div.mcview-wrapper').each((index, element_item) => {
+                            let element = $(element_item);
+                            render(element);
+                        });
+                    },
+                });
+            }
+        );
 
         const render = (element) => {
             const validate = (data, schema) => {
@@ -219,21 +227,36 @@ mw.hook('wikipage.categories').add(() => {
                 }
                 case 'crafting': {
                     if (validate(data, crafting_schema)) {
-                        element.append(createCraftTable(data.input, data.output, data.shapeless));
+                        element.append(
+                            createCraftTable(
+                                data.input,
+                                data.output,
+                                data.shapeless
+                            )
+                        );
                         return true;
                     }
                     break;
                 }
                 case 'smelting': {
                     if (validate(data, smelting_schema)) {
-                        element.append(createFurnace(data.input, data.output, data.exp));
+                        element.append(
+                            createFurnace(data.input, data.output, data.exp)
+                        );
                         return true;
                     }
                     break;
                 }
                 case 'inventory': {
                     if (validate(data, inventory_schema)) {
-                        element.append(createInventory(data.items, data.size, data.slot, data.title));
+                        element.append(
+                            createInventory(
+                                data.items,
+                                data.size,
+                                data.slot,
+                                data.title
+                            )
+                        );
                         return true;
                     }
                     break;
@@ -242,7 +265,13 @@ mw.hook('wikipage.categories').add(() => {
                 case 'processing-b':
                 case 'processing-c':
                 case 'processing-d': {
-                    element.append(createProcessor(type.split('-')[1], data.input, data.output));
+                    element.append(
+                        createProcessor(
+                            type.split('-')[1],
+                            data.input,
+                            data.output
+                        )
+                    );
                     return true;
                 }
                 default: {
@@ -250,7 +279,12 @@ mw.hook('wikipage.categories').add(() => {
                     return false;
                 }
             }
-            element.append(error_message('JSON validation failed', window.MCView.validator.getLastErrors()));
+            element.append(
+                error_message(
+                    'JSON validation failed',
+                    window.MCView.validator.getLastErrors()
+                )
+            );
             return false;
         };
 
@@ -283,7 +317,9 @@ mw.hook('wikipage.categories').add(() => {
             let item = item_map.map[name];
 
             if (!item) {
-                return error_message(`item:${namespace}:${name} does not exist in the mapping table`);
+                return error_message(
+                    `item:${namespace}:${name} does not exist in the mapping table`
+                );
             }
 
             let element = $('<div></div>').addClass('mcview-itemstack');
@@ -293,11 +329,16 @@ mw.hook('wikipage.categories').add(() => {
 
             let image_html = $('<div></div>')
                 .addClass(`mcview item-image item-image-medium ${namespace}`)
-                .css('background-position', `-${image_left * 32}px -${image_top * 32}px`);
+                .css(
+                    'background-position',
+                    `-${image_left * 32}px -${image_top * 32}px`
+                );
             element.append(image_html);
 
             if (stacksize > 1) {
-                let stackcount_html = $('<span></span>').addClass('mcview item-stacksize mcfont').html(stacksize);
+                let stackcount_html = $('<span></span>')
+                    .addClass('mcview item-stacksize mcfont')
+                    .html(stacksize);
                 element.append(stackcount_html);
             }
 
@@ -308,8 +349,12 @@ mw.hook('wikipage.categories').add(() => {
                         $('<span></span>')
                             .addClass('value')
                             .css({
-                                width: `${Number(durability * 100).toFixed(1)}%`,
-                                backgroundColor: `hsl(${durability * 108},100%,50%)`,
+                                width: `${Number(durability * 100).toFixed(
+                                    1
+                                )}%`,
+                                backgroundColor: `hsl(${
+                                    durability * 108
+                                },100%,50%)`,
                             })
                     );
                 element.append(durability_html);
@@ -317,8 +362,12 @@ mw.hook('wikipage.categories').add(() => {
 
             let tooltip = $('<div></div>')
                 .addClass('mcview item-tooltip mcfont unifont')
-                .append(`<div class="zh-name">${item.zh_name} (${item.en_name})</div>`)
-                .append(`<div class="register-name">${item.register_name}</div>`);
+                .append(
+                    `<div class="zh-name">${item.zh_name} (${item.en_name})</div>`
+                )
+                .append(
+                    `<div class="register-name">${item.register_name}</div>`
+                );
             element.append(tooltip);
 
             return element;
@@ -338,17 +387,26 @@ mw.hook('wikipage.categories').add(() => {
                      * @param {JQuery<HTMLElement>} warpper_element
                      * @return {JQuery<HTMLElement>} Animated item slot
                      */
-                    let createAnimatedSlot = (itemstack_array, warpper_element) => {
-                        let animated_slot = $('<div></div>').addClass('mcui-slot animated');
+                    let createAnimatedSlot = (
+                        itemstack_array,
+                        warpper_element
+                    ) => {
+                        let animated_slot =
+                            $('<div></div>').addClass('mcui-slot animated');
 
-                        Array.from(itemstack_array).forEach((item_stack, index) => {
-                            animated_slot.append(
-                                $('<div></div>')
-                                    .append(createItemStack(item_stack))
-                                    .attr('style', index > 0 ? 'display:none' : '')
-                                    .addClass('animate-item')
-                            );
-                        });
+                        Array.from(itemstack_array).forEach(
+                            (item_stack, index) => {
+                                animated_slot.append(
+                                    $('<div></div>')
+                                        .append(createItemStack(item_stack))
+                                        .attr(
+                                            'style',
+                                            index > 0 ? 'display:none' : ''
+                                        )
+                                        .addClass('animate-item')
+                                );
+                            }
+                        );
 
                         let switch_item_timer = {
                             timer: 0,
@@ -362,7 +420,10 @@ mw.hook('wikipage.categories').add(() => {
                                         .siblings()
                                         .hide();
                                     switch_item_timer.index++;
-                                    if (switch_item_timer.index == itemstack_array.length) {
+                                    if (
+                                        switch_item_timer.index ==
+                                        itemstack_array.length
+                                    ) {
                                         switch_item_timer.index = 0;
                                     }
                                 }, 1000);
@@ -374,12 +435,16 @@ mw.hook('wikipage.categories').add(() => {
                         switch_item_timer.start();
 
                         if (warpper_element !== null) {
-                            warpper_element.get(0).addEventListener('mouseover', () => {
-                                switch_item_timer.suspend();
-                            });
-                            warpper_element.get(0).addEventListener('mouseleave', () => {
-                                switch_item_timer.start();
-                            });
+                            warpper_element
+                                .get(0)
+                                .addEventListener('mouseover', () => {
+                                    switch_item_timer.suspend();
+                                });
+                            warpper_element
+                                .get(0)
+                                .addEventListener('mouseleave', () => {
+                                    switch_item_timer.start();
+                                });
                         }
 
                         return animated_slot;
@@ -387,10 +452,14 @@ mw.hook('wikipage.categories').add(() => {
 
                     return createAnimatedSlot(slot_items, warpper_element);
                 } else {
-                    return $('<div></div>').append(createItemStack(slot_items[0])).addClass('mcui-slot');
+                    return $('<div></div>')
+                        .append(createItemStack(slot_items[0]))
+                        .addClass('mcui-slot');
                 }
             } else {
-                return $('<div></div>').append(createItemStack(slot_items)).addClass('mcui-slot');
+                return $('<div></div>')
+                    .append(createItemStack(slot_items))
+                    .addClass('mcui-slot');
             }
         };
 
@@ -405,7 +474,9 @@ mw.hook('wikipage.categories').add(() => {
 
             let input_element = $('<div></div>').addClass('mcui-input fcol');
             for (var i = 0; i < 3; i++) {
-                input_element.append($('<div></div>').addClass(`mcui-row row-${i} frow`));
+                input_element.append(
+                    $('<div></div>').addClass(`mcui-row row-${i} frow`)
+                );
             }
             Array.from(input).forEach((input_row, index) => {
                 let row = input_element.children(`.mcui-row.row-${index}`);
@@ -416,17 +487,26 @@ mw.hook('wikipage.categories').add(() => {
             });
             table.append(input_element);
 
-            table.append($('<div></div>').addClass('mcui-arrow mcui-inactive').append(mcui_arrow_a)); //arrow
+            table.append(
+                $('<div></div>')
+                    .addClass('mcui-arrow mcui-inactive')
+                    .append(mcui_arrow_a)
+            ); //arrow
 
             table.append(
-                $('<div></div>').addClass('mcui-output').append(createItemSlot(output, table).addClass('large'))
+                $('<div></div>')
+                    .addClass('mcui-output')
+                    .append(createItemSlot(output, table).addClass('large'))
             ); //output
 
             if (shapeless) {
                 table.append(
                     $('<div></div>')
                         .addClass('mcui-icon craft-shapeless mcui-inactive')
-                        .attr('title', '此配方是无序的，原料可以放置在合成网格的任意位置。')
+                        .attr(
+                            'title',
+                            '此配方是无序的，原料可以放置在合成网格的任意位置。'
+                        )
                         .append(mcui_shapeless)
                 );
             }
@@ -445,19 +525,32 @@ mw.hook('wikipage.categories').add(() => {
 
             let input_element = $('<div></div>').addClass('mcui-input fcol');
             for (var i = 0; i < 3; i++) {
-                input_element.append($('<div></div>').addClass(`mcui-row row-${i} frow`));
+                input_element.append(
+                    $('<div></div>').addClass(`mcui-row row-${i} frow`)
+                );
             }
-            input_element.children('.mcui-row.row-1').append(mcui_fuel).addClass('mcui-fuel mcui-inactive');
+            input_element
+                .children('.mcui-row.row-1')
+                .append(mcui_fuel)
+                .addClass('mcui-fuel mcui-inactive');
             Array.from(input).forEach((input_slot, index) => {
-                let row = input_element.children(`.mcui-row.row-${index == 0 ? index : 2}`);
+                let row = input_element.children(
+                    `.mcui-row.row-${index == 0 ? index : 2}`
+                );
                 row.append(createItemSlot(input_slot, furnace));
             });
             furnace.append(input_element);
 
-            furnace.append($('<div></div>').addClass('mcui-arrow mcui-inactive').append(mcui_arrow_b)); // arrow
+            furnace.append(
+                $('<div></div>')
+                    .addClass('mcui-arrow mcui-inactive')
+                    .append(mcui_arrow_b)
+            ); // arrow
 
             furnace.append(
-                $('<div></div>').addClass('mcui-output').append(createItemSlot(output, furnace).addClass('large'))
+                $('<div></div>')
+                    .addClass('mcui-output')
+                    .append(createItemSlot(output, furnace).addClass('large'))
             ); // output
 
             if (exp !== undefined && exp !== null) {
@@ -481,15 +574,29 @@ mw.hook('wikipage.categories').add(() => {
             let element = mcui.clone().append(
                 $('<div></div>')
                     .addClass('mcui-processor frow')
-                    .append($('<div></div>').addClass('mcui-input').append($('<div></div>').addClass('mcui-row frow'))) // input
-                    .append($('<div></div>').addClass('mcui-arrow mcui-inactive').append(mcui_arrow_b)) // arrow
-                    .append($('<div></div>').addClass('mcui-output').append($('<div></div>').addClass('mcui-row frow'))) // output
+                    .append(
+                        $('<div></div>')
+                            .addClass('mcui-input')
+                            .append($('<div></div>').addClass('mcui-row frow'))
+                    ) // input
+                    .append(
+                        $('<div></div>')
+                            .addClass('mcui-arrow mcui-inactive')
+                            .append(mcui_arrow_b)
+                    ) // arrow
+                    .append(
+                        $('<div></div>')
+                            .addClass('mcui-output')
+                            .append($('<div></div>').addClass('mcui-row frow'))
+                    ) // output
             );
 
             let input_element = element.find('.mcui-input>.mcui-row');
             let output_element = element.find('.mcui-output>.mcui-row');
 
-            let plus_element = $('<div></div>').addClass('mcui-plus mcui-inactive').append(mcui_plus);
+            let plus_element = $('<div></div>')
+                .addClass('mcui-plus mcui-inactive')
+                .append(mcui_plus);
 
             switch (type.toLowerCase()) {
                 case 'a': {
@@ -546,13 +653,23 @@ mw.hook('wikipage.categories').add(() => {
         const createInventory = (item_list, size, display_slot, title) => {
             let inv_element = $('<div></div>').addClass('mcui-inventory');
             for (let r = 0; r < size[1]; r++) {
-                let row_element = $('<div></div>').addClass(`mcui-row row-${r} frow`);
+                let row_element = $('<div></div>').addClass(
+                    `mcui-row row-${r} frow`
+                );
                 for (let s = 0; s < size[0]; s++) {
                     row_element.append(
                         $('<div></div>')
-                            .addClass(`slot-${r * size[0] + s} mcui-col col-${s}`)
+                            .addClass(
+                                `slot-${r * size[0] + s} mcui-col col-${s}`
+                            )
                             .append(
-                                $('<div></div>').addClass(`mcui-slot${display_slot === false ? '-placeholder' : ''}`)
+                                $('<div></div>').addClass(
+                                    `mcui-slot${
+                                        display_slot === false
+                                            ? '-placeholder'
+                                            : ''
+                                    }`
+                                )
                             )
                     );
                 }
@@ -564,13 +681,22 @@ mw.hook('wikipage.categories').add(() => {
                     .find(
                         Object.prototype.hasOwnProperty.call(slot_item, 'index')
                             ? `.mcui-row>.slot-${Number(slot_item.index)}`
-                            : Object.prototype.hasOwnProperty.call(slot_item, 'pos')
+                            : Object.prototype.hasOwnProperty.call(
+                                  slot_item,
+                                  'pos'
+                              )
                             ? `.mcui-row.row-${slot_item.pos[1]}>.mcui-col.col-${slot_item.pos[0]}`
                             : null
                     )
                     .html(
                         $('<div></div>')
-                            .addClass(`mcui-slot${slot_item.slot === false ? '-placeholder' : ''}`)
+                            .addClass(
+                                `mcui-slot${
+                                    slot_item.slot === false
+                                        ? '-placeholder'
+                                        : ''
+                                }`
+                            )
                             .append(createItemStack(slot_item.item))
                     );
             });
@@ -580,9 +706,16 @@ mw.hook('wikipage.categories').add(() => {
                 return mcui
                     .clone()
                     .attr('style', 'padding-top:0px')
-                    .append(mcui_container.clone().append(title_elemnet).append(inv_element));
+                    .append(
+                        mcui_container
+                            .clone()
+                            .append(title_elemnet)
+                            .append(inv_element)
+                    );
             }
-            return mcui.clone().append(mcui_container.clone().append(inv_element));
+            return mcui
+                .clone()
+                .append(mcui_container.clone().append(inv_element));
         };
 
         /**
@@ -617,7 +750,9 @@ mw.hook('wikipage.categories').add(() => {
              * @return {JQuery<HTMLElement>}
              */
             const createTextComponentS = (data) => {
-                let element = $('<span></span>').addClass('mcview mcview-textcomponent mcfont unifont');
+                let element = $('<span></span>').addClass(
+                    'mcview mcview-textcomponent mcfont unifont'
+                );
 
                 element.html(data.text.replace('\n', '<br/>'));
 
@@ -629,18 +764,27 @@ mw.hook('wikipage.categories').add(() => {
                     }
                 }
 
-                (data.underlined === undefined) & (data.strikethrough === undefined)
+                (data.underlined === undefined) &
+                (data.strikethrough === undefined)
                     ? null
                     : element.css('text-decoration', () => {
-                          if (!data.underlined & !data.strikethrough) return 'none';
+                          if (!data.underlined & !data.strikethrough)
+                              return 'none';
                           let s = '';
                           if (data.underlined) s += 'underline';
                           if (data.strikethrough) s += ' line-through';
                           return s;
                       });
 
-                data.bold !== undefined ? element.css('font-weight', data.bold ? 'bold' : 'normal') : null;
-                data.italic !== undefined ? element.css('font-style', data.italic ? 'italic' : 'normal') : null;
+                data.bold !== undefined
+                    ? element.css('font-weight', data.bold ? 'bold' : 'normal')
+                    : null;
+                data.italic !== undefined
+                    ? element.css(
+                          'font-style',
+                          data.italic ? 'italic' : 'normal'
+                      )
+                    : null;
 
                 if (data.hoverEvent !== undefined) {
                     element.append(
@@ -648,8 +792,12 @@ mw.hook('wikipage.categories').add(() => {
                             .addClass('mcview tooltip mcfont unifont')
                             .html(() => {
                                 if (data.hoverEvent.action === 'show_text') {
-                                    return createTextComponent(data.hoverEvent.contents);
-                                } else if (data.hoverEvent.action === 'show_item') {
+                                    return createTextComponent(
+                                        data.hoverEvent.contents
+                                    );
+                                } else if (
+                                    data.hoverEvent.action === 'show_item'
+                                ) {
                                     return createItemStack({
                                         id: data.hoverEvent.contents.id,
                                         count: data.hoverEvent.contents.count,
