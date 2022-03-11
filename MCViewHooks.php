@@ -17,13 +17,19 @@ class MCViewHooks
         $parser->getOutput()->addModules('ext.MCView.view');
         $parser->getOutput()->addModules('ext.MCView.font');
 
-        $raw_data = json_decode($input);
-        if (json_last_error() != JSON_ERROR_NONE) {
-            return Html::Element(
-                'div',
-                ['class' => 'mcview-error'],
-                '[MCViewS]Parsing failed: Invalid JSON data'
-            );
+        $data = '';
+        if ($args['type'] == 'itemicon') {
+            $data = json_encode([id => $input]);
+        } else {
+            $raw_data = json_decode($input);
+            if (json_last_error() != JSON_ERROR_NONE) {
+                return Html::Element(
+                    'div',
+                    ['class' => 'mcview-error'],
+                    '[MCViewS]Parsing failed: Invalid JSON data'
+                );
+            }
+            $data = json_encode($raw_data, JSON_UNESCAPED_UNICODE);
         }
 
         return Html::rawElement(
@@ -35,7 +41,7 @@ class MCViewHooks
             Html::Element(
                 'div',
                 ['class' => 'mcview-data'],
-                json_encode($raw_data, JSON_UNESCAPED_UNICODE)
+                $data
             )
         );
     }

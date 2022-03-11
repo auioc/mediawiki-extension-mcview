@@ -183,6 +183,9 @@ mw.hook('wikipage.categories').add(() => {
             }
         );
 
+        /**
+         * @param {JQuery<HTMLElement>} element
+         */
         const render = (element) => {
             const validate = (data, schema) => {
                 schema.definitions = base_json_schema;
@@ -207,6 +210,7 @@ mw.hook('wikipage.categories').add(() => {
             }
 
             switch (type) {
+                case 'itemicon':
                 case 'itemstack': {
                     if (validate(data, itemstack_schema)) {
                         element.append(createItemStack(data));

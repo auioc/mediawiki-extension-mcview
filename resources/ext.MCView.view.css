@@ -70,11 +70,13 @@
     height: 2.6px;
 }
 
-.mcview-itemicon {
+.mcview-type-itemicon {
     position: relative;
     display: inline-block;
-    width: 16px;
-    height: 16px;
+    vertical-align: bottom;
+}
+.mcview-type-itemicon .mcview.item-tooltip {
+    display: none !important;
 }
 
 .mcui {
